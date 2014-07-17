@@ -89,7 +89,39 @@ Since 3.2
 >1.  private Collaborator mock;
 >1. } 
 
+为了得到Mock对象，我们需要做：
 
+1. 为我们想要模拟的接口创建模拟对象；
+2. 录制预期行为；
+3. 切换模拟对象到回放状态；
+
+这是第一个例子
+
+>1. @Before
+>1. public void setUp() {
+>1.   mock = createMock(Collaborator.class); // 1
+>1.    classUnderTest = new ClassUnderTest();
+>1.    classUnderTest.setListener(mock); 
+>1. } 
+>1. 
+>1. @Test 
+>1. public void testRemoveNonExistingDocument() { 
+>1.   // 2 (we do not expect anything) 
+>1.  replay(mock); // 3 
+>1.  classUnderTest.removeDocument("Does not exist"); 
+>1. }
+
+在第三步激活后，mock就是Collaborator接口没有预期调用的一个模拟对象。这就说明如果我们改变ClassUnderTest类去调用接口的任何一个方法，模拟对象都会跑出AeertionError错误：
+
+>1. java.lang.AssertionError: 
+>1. &nbsp;&nbsp;Unexpected method call documentRemoved("Does not exist"): 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;   at org.easymock.internal.MockInvocationHandler.invoke(MockInvocationHandler.java:29) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;   at org.easymock.internal.ObjectMethodsFilter.invoke(ObjectMethodsFilter.java:44) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;   at $Proxy0.documentRemoved(Unknown Source) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;   at org.easymock.samples.ClassUnderTest.notifyListenersDocumentRemoved(ClassUnderTest.java:74) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;   at org.easymock.samples.ClassUnderTest.removeDocument(ClassUnderTest.java:33) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;   at org.easymock.samples.ExampleTest.testRemoveNonExistingDocument(ExampleTest.java:24) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;     ...  
 ###使用注解
 
 ###EasyMockSupport
