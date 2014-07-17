@@ -190,19 +190,39 @@ mock对象在第一步的时候被runner实例化。 然后在第二步的时候
 
 ###EasyMockSupport
 
+EasyMockSupport是一个帮助跟踪你的模拟对象的类。你的测试用例可以继承它或者代理。它会自动得注册所有的模拟对象并且批量回放、重置和验证他们而不是明确调用。下面是个例子：
 
+>1. public class SupportTest extends EasyMockSupport {
+>1. 
+>1.   private Collaborator firstCollaborator;
+>1.   private Collaborator secondCollaborator;
+>1.   private ClassTested classUnderTest;
+>1. 
+>1.   @Before
+>1.   public void setup() {
+>1.     classUnderTest = new ClassTested();
+>1.   }
+>1. 
+>1.   @Test
+>1.   public void addDocument() {
+>1.     // creation phase
+>1.     firstCollaborator = <font color=red>createMock</font>(Collaborator.class);
+>1.     secondCollaborator = <font color=red>createMock</font>(Collaborator.class);
+>1.     classUnderTest.addListener(firstCollaborator);
+>1.     classUnderTest.addListener(secondCollaborator);
+>1. 
+>1.     // recording phase
+>1.     firstCollaborator.documentAdded("New Document");
+>1.     secondCollaborator.documentAdded("New Document");
+>1.     <font color=red>replayAll()</font>;  <font color=green>**// replay all mocks at once**</font>
+>1. 
+>1.     // test
+>1.     classUnderTest.addDocument("New Document", new byte[0]);
+>1.     <font color=red>verifyAll()</font>; <font color=green>**// verify all mocks at once**</font>
+>1.   }
+>1. }
 
-
-
-
-
-
-
-
-
-
-
-
+###严格的模拟(Strict Mocks)
 
 
 
