@@ -122,7 +122,71 @@ Since 3.2
 >1. &nbsp;&nbsp;&nbsp;&nbsp;   at org.easymock.samples.ClassUnderTest.removeDocument(ClassUnderTest.java:33) 
 >1. &nbsp;&nbsp;&nbsp;&nbsp;   at org.easymock.samples.ExampleTest.testRemoveNonExistingDocument(ExampleTest.java:24) 
 >1. &nbsp;&nbsp;&nbsp;&nbsp;     ...  
-###使用注解
+
+
+###使用注解(since 3.2)
+
+这里有一个优雅和简单的方法去创建你的模拟对象并把它们注入到你的测试类中。下面是上面的例子，现在使用的是注解：
+
+>1. import static org.easymock.EasyMock.*; 
+>1. import org.easymock.EasyMockRunner;
+>1. import org.easymock.TestSubject; 
+>1. import org.easymock.Mock; 
+>1. import org.junit.Test; 
+>1. import org.junit.runner.RunWith;
+>1. 
+>1. @RunWith(EasyMockRunner.class) 
+>1. public class ExampleTest {
+>1. 
+>1.   @TestSubject 
+>1.   private ClassUnderTest classUnderTest = new ClassUnderTest(); // 2 
+>1.   
+>1. @Mock 
+>1.   private Collaborator mock; // 1 
+>1.   
+>1.   @Test 
+>1.   public void testRemoveNonExistingDocument() { 
+>1.  &nbsp;&nbsp;   replay(mock); 
+>1.  &nbsp;&nbsp;   classUnderTest.removeDocument("Does not exist"); 
+>1.   } 
+>1. } 
+
+mock对象在第一步的时候被runner实例化。 然后在第二步的时候被runner设置到了listener字段中。因为所有的初始化工作全都被runner做了，setUp方法就可以被删除。
+
+另外，从EasyMock 3.3开始，如果你在测试中需要使用别的runner， 一个JUnit规则可以被使用。他们有着同样的行为，选择其中之一是个品味问题：
+
+>1. import static org.easymock.EasyMock.*; 
+>1. import org.easymock.EasyMockRule; 
+>1. import org.easymock.TestSubject; 
+>1. import org.easymock.Mock; 
+>1. import org.junit.Rule; 
+>1. import org.junit.Test; 
+>1. 
+>1. public class ExampleTest {
+>1. 
+>1.   @Rule 
+>1.   public EasyMockRule mocks = new EasyMockRule(this); 
+>1.   
+>1.   @TestSubject 
+>1.   private ClassUnderTest classUnderTest = new ClassUnderTest(); 
+>1.   
+>1.   @Mock 
+>1.   private Collaborator mock; 
+>1.   
+>1.   @Test 
+>1.   public void testRemoveNonExistingDocument() {
+>1.     replay(mock); 
+>1.     classUnderTest.removeDocument("Does not exist"); 
+>1.   } 
+>1. } 
+
+注解有一个可选的要素'type'，用来定义这些模拟对象是nice还是strict模拟。另外一个可选注解是‘name’，允许设置模拟对象的名称，在调用createMock方法的时候被使用，也会在错误消息中被显示。最后一个可选的元素是‘fieldNmae’，用来指定模拟对象将会被注入的目标域的名称。模拟对象会被注入到@TestSubject兼容类型的任何域中。但是两个以上的模拟对象被指派给同一个域是一个错误。在这样的场景中fieldName的唯一性检查将会消除这个歧义。
+
+>1. @Mock(type = MockType.NICE, name = "mock", fieldName = "someField") 
+>1. private Collaborator mock; 
+>1. 
+>1. @Mock(type = MockType.STRICT, name = "anotherMock", fieldName = "someOtherField") 
+>1. private Collaborator anotherMock; 
 
 ###EasyMockSupport
 
