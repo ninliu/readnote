@@ -230,6 +230,25 @@ EasyMockSupport是一个帮助跟踪你的模拟对象的类。你的测试用�
 
 ###友好的模拟(Nice Mocks)
 
+createMock()方法创建的模拟，为所有方法不符合期望的调用的默认行为是抛出一个AssertionError错误。如果你偏好一个友好的模拟对象，它允许所有方法的调用并且返回空值（0,null或者false)，那么使用createNickMock()方法。
+
+###局部模拟(Partial mocking)
+
+有时候你只希望模拟一个类的某些方法保留其他方法的行为。这种情况通常发生在你打算去测试一个方法，但是这个方法调用了这个类型其他方法，所以你需要保留被测试方法的正常行为而只是模拟其他的。
+
+在这样的情况下，通常第一件事情是考虑重构，因为这样问题的产生的原因是不好的设计。如果不是这样的情况或者你因为一些开发的限制没有办法这么做，这是一个解决方案：
+
+>1. ToMock mock = createMockBuilder(ToMock.class)
+>1. &nbsp;&nbsp;  .addMockedMethod("mockedMethod").createMock();
+
+在这个情况下，只有通过addMockedMethod(s)方法加入的方法才会被模拟（比如上面例子里面的mockedMethod()方法)。其他的方法会保留它们原本的行为。一个特例：为了方便虚方法默认就会被模拟的。
+
+createMockBuilder()返回一个IMockBuilder接口。它包含了方便创建局部模拟的一些方法。详细查看javadoc。
+
+**备注:**EasyMock为Object对象的方法(equals, hashCode, toString, finalize)提供了默认的行为。然而，在局部模拟中，如果这些方法不被明确的模拟，他们会有正常的行为而不是EasyMock的默认行为。
+
+###自测试
+
 
 
 #end
