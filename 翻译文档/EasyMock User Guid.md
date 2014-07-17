@@ -224,7 +224,11 @@ EasyMockSupport是一个帮助跟踪你的模拟对象的类。你的测试用�
 
 ###严格的模拟(Strict Mocks)
 
+通过EasyMock.createMock()方法创建的模拟对象，方法调用的顺序并不会被检查。如果你需要一个检查方法执行顺序的模拟对象，使用EasyMock.createStrictMock()来创建。
 
+如果在严格模拟对象上有个未预期的方法被调用，异常信息会在期望方法调用的第一个冲突点上显示。verfy(mock)会显示所有没有调用到的方法。
+
+###友好的模拟(Nice Mocks)
 
 
 
