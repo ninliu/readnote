@@ -358,4 +358,21 @@ EasyMock提供了一个属性允许修改它的行为。它的目的是允许在
 
 ###对象方法
 
+Object对象的四个方法equals(),hashCode(),toString()和finalize()的行为在EasyMock中创建的模拟对象中不能被修改，即使他们属于被创建的模拟对象的接口的一部分。
+
+###使用方法的部分行为
+
+有时候，我们希望我们的模拟对象爱你个响应某些方法调用，但又不希望去检查他们被调用的频率，他们什么时候被调用甚至他们是否被调用。这个行为可以使用方法andStubReturn(Object value),andStubThrow(Throwable throwable), andStubAnswer(IAnswer<T> answer)和asStub()来定义。下面的代码配置了模拟对象执行voteForRemoval("Document")返回42其他参数返回-1:
+
+>1. expect(mock.voteForRemoval("Document")).andReturn(42); 
+>1. expect(mock.voteForRemoval(not(eq("Document")))).andStubReturn(-1);
+
+###复用模拟对象
+
+模拟对象能通过reset(mock)方法重置
+
+如果需要，一个模拟对象还可以通过resetToNice(mock),resetToDefault(mock)和resetToStrict(mock)方法转成其他类型。
+
+##验证
+
 ----
