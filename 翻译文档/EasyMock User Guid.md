@@ -332,5 +332,19 @@ EasyMock为Object对象的方法(equals, hashCode, toString, finalize)提供了�
  
 ###改变同样方法调用的行为
 
+改变一个方法的行为也是可行的。 方法times，addReturn和andThrow可以被串成一个链。举个例子，我们定义方法voteForRemoval("Document")的行为如下：
+
+* 前三次执行返回42；
+* 接下四次执行抛出RuntimeException;
+* 返回一次-42
+
+>1. expect(mock.voteForRemoval("Document"))
+>1.   .andReturn((byte) 42).times(3) 
+>1.   .andThrow(new RuntimeException(), 4) 
+>1.   .andReturn((byte) -42);
+
+###修改EasyMock的默认行为
+
+
 
 #end
