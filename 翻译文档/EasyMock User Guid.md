@@ -401,6 +401,60 @@ Object对象的四个方法equals(),hashCode(),toString()和finalize()的行为�
 
 ###预期一个明确的调用数值
 
+到目前为止，我们的测试只验证一个简单方法的调用。下面的测试将检查是否已存在的文档的添加会去使用适当的参数调用mock.documentChanged()方法。为了确保结果，我们检查这个三次（这只是个例子）：
 
+>1. @Test 
+>1. public void testAddAndChangeDocument() {
+>1. &nbsp;&nbsp;mock.documentAdded("Document");
+>1. &nbsp;&nbsp;  mock.documentChanged("Document");
+>1. &nbsp;&nbsp;  mock.documentChanged("Document");
+>1. &nbsp;&nbsp;  mock.documentChanged("Document");
+>1. &nbsp;&nbsp;  replay(mock);
+>1. &nbsp;&nbsp;  classUnderTest.addDocument("Document", new byte[0]);
+>1. &nbsp;&nbsp;  classUnderTest.addDocument("Document", new byte[0]);
+>1. &nbsp;&nbsp;  classUnderTest.addDocument("Document", new byte[0]);
+>1. &nbsp;&nbsp;  classUnderTest.addDocument("Document", new byte[0]);
+>1. &nbsp;&nbsp;  verify(mock);
+>1. }
+
+为了避免代码mock.documentChanged("Document")的重复，EasyMock提供了一个快捷方法。我们只需要通过方法expectLastCall()返回的对象上执行times(int times)声明执行次数即可。 现在的代码将会是这样：
+
+>1. @Test 
+>1. public void testAddAndChangeDocument() {
+>1. &nbsp;&nbsp;mock.documentAdded("Document");
+>1. &nbsp;&nbsp;  mock.documentChanged("Document");
+>1. &nbsp;&nbsp;  expectLastCall().times(3);
+>1. &nbsp;&nbsp;  replay(mock);
+>1. &nbsp;&nbsp;  classUnderTest.addDocument("Document", new byte[0]);
+>1. &nbsp;&nbsp;  classUnderTest.addDocument("Document", new byte[0]);
+>1. &nbsp;&nbsp;  classUnderTest.addDocument("Document", new byte[0]);
+>1. &nbsp;&nbsp;  classUnderTest.addDocument("Document", new byte[0]);
+>1. &nbsp;&nbsp;  verify(mock);
+>1. }
+
+如果调用次数过多，我们会得到一个异常信息告诉我们这个方法被调用次数过多了。这个错误会在第一个方法调用触及到这个限制的时候立刻发生：
+
+>1. java.lang.AssertionError:
+>1. &nbsp;&nbsp;  Unexpected method call documentChanged("Document"): 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;    documentChanged("Document"): expected: 3, actual: 4 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.internal.MockInvocationHandler.invoke(MockInvocationHandler.java:29) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.internal.ObjectMethodsFilter.invoke(ObjectMethodsFilter.java:44) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      at $Proxy0.documentChanged(Unknown Source) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.samples.ClassUnderTest.notifyListenersDocumentChanged(ClassUnderTest.java:67) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.samples.ClassUnderTest.addDocument(ClassUnderTest.java:26) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.samples.ExampleTest.testAddAndChangeDocument(ExampleTest.java:43) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      ... 
+
+如果调用次数少于预期，verify(mock)同样会抛出AssertionError：
+
+>1. java.lang.AssertionError: 
+>1. &nbsp;&nbsp;  Expectation failure on verify: 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;    documentChanged("Document"): expected: 3, actual: 2 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.internal.MocksControl.verify(MocksControl.java:70) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.EasyMock.verify(EasyMock.java:536) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.samples.ExampleTest.testAddAndChangeDocument(ExampleTest.java:43)
+>1. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      ...
+
+###指定返回值
 
 ----
