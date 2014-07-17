@@ -375,4 +375,32 @@ Object对象的四个方法equals(),hashCode(),toString()和finalize()的行为�
 
 ##验证
 
+###第一个验证
+
+到这里我们有一个错误没有处理：如果我们描述了行为，我们就想要去验证是否真的被使用了。当前的测试将会通过如果没有任何一个模拟对象的方法被调用。为了检查我们声明的行为是否被使用，执行verify(mock):
+
+>1. @Test 
+>1. public void testAddDocument() {
+>1.   mock.documentAdded("New Document"); // 2
+>1.   replay(mock); // 3
+>1.   classUnderTest.addDocument("New Document", new byte[0]);
+>1.   verify(mock);
+>1. }
+
+如果模拟对象的这个方法并没有被使用，我们会看到下面的异常信息：
+
+>1. java.lang.AssertionError: 
+>1.   Expectation failure on verify: 
+>1.     documentAdded("New Document"): expected: 1, actual: 0 
+>1.       at org.easymock.internal.MocksControl.verify(MocksControl.java:70) 
+>1.       at org.easymock.EasyMock.verify(EasyMock.java:536) 
+>1.       at org.easymock.samples.ExampleTest.testAddDocument(ExampleTest.java:31) 
+>1.       ... 
+
+异常信息列出了所有错失的预期。
+
+###预期一个明确的调用数值
+
+
+
 ----
