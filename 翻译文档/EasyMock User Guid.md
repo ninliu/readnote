@@ -45,7 +45,71 @@ Since 3.2
 ###第一个模拟对象
 现在我们将创建一个测试用例并通过它来了解掌握EasyMock的功能。你也可以查看[例子](https://github.com/easymock/easymock/tree/master/easymock/src/samples/java/org/easymock/samples)和[快速入门](http://easymock.org/getting-started.html)
 
+我们的第一个测试将会检查移除一个不存在的文档不会引起collaborator的通知，下面是一个测试没有使用Mock对象
+
+>import org.junit.*; 
+>
+>public class ExampleTest {
+>
+>  private ClassUnderTest classUnderTest; 
+>  
+>  private Collaborator mock; 
+>  
+>  @Before 
+>  
+>  public void setUp() { 
+>  
+>    classUnderTest = new ClassUnderTest(); 
+>    
+>    classUnderTest.<font color=green>setListener</font>(mock); 
+>    
+>  } 
+>  
+>  @Test 
+>  
+>  public void testRemoveNonExistingDocument() { 
+>  
+>    // This call should not lead to any notification 
+>    
+>    // of the Mock Object: 
+>    
+>    classUnderTest.<font color=green>removeDocument</font>("<font color=red>Does not exist</font>"); 
+>    
+>  } 
+>  
+>} 
+>
+
+大多数情况下使用EasyMock，只需要静态导入org.easymock.EasyMock的方法
+
+>1. import static org.easymock.EasyMock.*;
+>1. import org.junit.*;
+>1. public class ExampleTest {
+>1.  private ClassUnderTest classUnderTest;  
+>1.  private Collaborator mock;
+>1. } 
+
 
 ###使用注解
 
 ###EasyMockSupport
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#end
