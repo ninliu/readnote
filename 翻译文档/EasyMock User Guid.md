@@ -251,6 +251,11 @@ EasyMock为Object对象的方法(equals, hashCode, toString, finalize)提供了�
 
 ###自测试
 
+通过调用某一个构建函数来创建一个模拟是可能的。 这会方便一个类方法需要被测试而且他方法被模拟。 你可以像这样做：
 
+>1. ToMock mock = createMockBuilder(ToMock.class)
+>1. .withConstructor(1, 2, 3); // 1, 2, 3 are the constructor parameters
+
+查看例子中的ConstructorCalledMockTest
 
 #end
