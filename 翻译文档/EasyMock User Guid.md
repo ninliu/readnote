@@ -245,7 +245,9 @@ createMock()方法创建的模拟，为所有方法不符合期望的调用的�
 
 createMockBuilder()返回一个IMockBuilder接口。它包含了方便创建局部模拟的一些方法。详细查看javadoc。
 
-**备注:**EasyMock为Object对象的方法(equals, hashCode, toString, finalize)提供了默认的行为。然而，在局部模拟中，如果这些方法不被明确的模拟，他们会有正常的行为而不是EasyMock的默认行为。
+**备注:** 
+
+EasyMock为Object对象的方法(equals, hashCode, toString, finalize)提供了默认的行为。然而，在局部模拟中，如果这些方法不被明确的模拟，他们会有正常的行为而不是EasyMock的默认行为。
 
 ###自测试
 
