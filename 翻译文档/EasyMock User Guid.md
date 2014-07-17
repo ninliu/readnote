@@ -258,4 +258,21 @@ EasyMock为Object对象的方法(equals, hashCode, toString, finalize)提供了�
 
 查看例子中的ConstructorCalledMockTest
 
+###替换默认的类实例化器
+
+因为某些原因（通常不支持的JVM），EasyMock没有办法在你的环境中模拟一个类是可能的。这种情况下，类实例化通常使用的是工厂模式。如果失败，需要替换默认的实例化方法：
+
+* 好用的旧类DefaultClasInstantiator很好的处理了序列化类，否则要尝试去猜测使用最好的构造行数和参数。
+* 你自己定义的实例化器质需要实现IClassInstantiator接口
+
+使用ClassInstantiatorFactory.setInstantiator()设置这个新的实例化器。通过setDefaultInstantiator()方法设置回默认的。
+
+**重要：**
+
+初始化器在你的测试用例之间是静态被保留的，所以请确保需要的时候重置它。
+
+###类模拟的限制
+
+* 
+
 #end
