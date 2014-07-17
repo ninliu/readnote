@@ -1,5 +1,7 @@
 #EasyMock用户指导
 ----
+翻译：龙庄主(http://blog.ninliu.net/)
+
 原文地址：[http://easymock.org/user-guide.html](http://easymock.org/user-guide.html)
 
 译者注：本文使用了EasyMock 3.3-SNAPSHOT版本，目前还没有在中央仓库，请自行下载[源码](https://github.com/easymock/easymock/ "源码")并编译安装到本地的maven仓库中
@@ -271,8 +273,21 @@ EasyMock为Object对象的方法(equals, hashCode, toString, finalize)提供了�
 
 初始化器在你的测试用例之间是静态被保留的，所以请确保需要的时候重置它。
 
+###序列化一个模拟类
+
+一个模拟对象同样支持序列化，因为它也是序列化类的子类，这个类定义了一个特殊的行为writeObject。这些方法在序列化这个对象的时候仍然会可能被调用而失败。解决办法通常是创建模拟对象的时候调用构造函数。
+
+同样，在不同的class loader反序列化模拟对象也会失败。这没有测试过。
+
 ###类模拟的限制
 
-* 
+* 为了接口模拟的连贯，EasyMock为类模拟的方法（equals(), toString(),hashCode()和finalize()）提供了内嵌的行为实现。这意味着你不能为这些方法录制自己的行为。 这个限制被认为是避免你不得不去关注这些方法的特点。
+* Final方法是不能被模拟的。如果被调用，他们的正常代码将会被执行。
+* Private方法不能被模拟。如果被调用，正常代码逻辑会被执行。在局部模拟中，如果你测试的方法调用了一些私有方法， 你需要测试他们因为不能模拟他们。
+* 使用[Objenesis](http://objenesis.googlecode.com/svn/docs/index.html)来执行类的实例化，支持的虚拟机列在[这里](http://code.google.com/p/objenesis/wiki/ListOfCurrentlySupportedVMs)
+
+###命名模拟对象
+
+
 
 #end
