@@ -288,6 +288,49 @@ EasyMock为Object对象的方法(equals, hashCode, toString, finalize)提供了�
 
 ###命名模拟对象
 
+模拟对象在创建的时候可以使用createMock(String name, Class<T> toMock), createStrictMock(String name, Class<T> toMock)或者createNiceMock(String name, Class<T> toMock)命名。这些名字会显示在异常信息中。
+
+##行为
+
+###第二个测试
+
+让我们开始编写第二个测试用例。 如果一个文档被测试类添加了，我们期望调用模拟对象的mock.documentAdded()方法，参数是文档的名称。
+
+>1. @Test
+>1. public void testAddDocument(){
+>1. mock.documentAdded("New Docuemnt");  //2
+>1. replay(mock); //3
+>1. clasUnderTest.addDocument("New Document", new byte[0]);
+>1. }
+
+那么在录制阶段（调用replay前），模拟对象并不会表现得像一个模拟对象的行为。但是它录下了方法的调用。在执行replay后，它的行为就是一个模拟独享，会检查是否所有期望的方法调用都真实得执行完成了。
+
+如果classUnderTest.addDocument("New Document", new byte[0])调用了预期的方法但是使用了错误的参数。模拟对象也会报出一个AssertionError错误：
+
+>1. java.lang.AssertionError: 
+>1. &nbsp;&nbsp;  Unexpected method call documentAdded("Wrong title"): 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;    documentAdded("New Document"): expected: 1, actual: 0 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.internal.MockInvocationHandler.invoke(MockInvocationHandler.java:29) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.internal.ObjectMethodsFilter.invoke(ObjectMethodsFilter.java:44) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;      at $Proxy0.documentAdded(Unknown Source) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.samples.ClassUnderTest.notifyListenersDocumentAdded(ClassUnderTest.java:61) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.samples.ClassUnderTest.addDocument(ClassUnderTest.java:28) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;      at org.easymock.samples.ExampleTest.testAddDocument(ExampleTest.java:30) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;      ...
+
+所有错失的期望，没有期望却被执行的调用也会显示（这个例子没有），如果一个方法被执行了多次，模拟对象同样也会报警：
+
+>1. java.lang.AssertionError: 
+>1. &nbsp;&nbsp; Unexpected method call documentAdded("New Document"): 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;   documentAdded("New Document"): expected: 1, actual: 2 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;     at org.easymock.internal.MockInvocationHandler.invoke(MockInvocationHandler.java:29) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;     at org.easymock.internal.ObjectMethodsFilter.invoke(ObjectMethodsFilter.java:44) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;     at $Proxy0.documentAdded(Unknown Source) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;     at org.easymock.samples.ClassUnderTest.notifyListenersDocumentAdded(ClassUnderTest.java:62) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;     at org.easymock.samples.ClassUnderTest.addDocument(ClassUnderTest.java:29) 
+>1. &nbsp;&nbsp;&nbsp;&nbsp;     at org.easymock.samples.ExampleTest.testAddDocument(ExampleTest.java:30) 
+ 
+###改变同样方法调用的行为
 
 
 #end
