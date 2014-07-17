@@ -14,17 +14,17 @@ EasyMock要求Java 1.5.0及以上版本
 ###使用maven
 EasyMock已经存在Maven的中央仓库中，只需要把下面的依赖配置添加到pom.xml中
 
-> <dependency\>
+> &lt;dependency&gt;
 >
->  <groupId\>org.easymock</groupId\>
+>   &lt;groupId&gt;org.easymock &lt;/groupId&gt;
 >
->  <artifactId\>easymock</artifactId\>
+>   &lt;artifactId&gt;easymock &lt;/artifactId&gt;
 >
->  <version\>3.2</version\>  <font color=red>*--译者注：例子中的代码其实使用的是3.3版本中的几个新类，所以建议用3.3-SNAPSHOT版本* </font>
+>   &lt;version&gt;3.2 &lt;/version&gt;  <font color=red>*--译者注：例子中的代码其实使用的是3.3版本中的几个新类，所以建议用3.3-SNAPSHOT版本* </font>
 >
->  <scope\>test</scope\>
+>   &lt;scope&gt;test &lt;/scope&gt;
 >
-></dependency\>
+> &lt;/dependency&gt;
 
 你当然可以使用任何和maven仓库兼容的依赖工具
 
