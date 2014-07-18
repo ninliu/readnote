@@ -504,6 +504,12 @@ Object对象的四个方法equals(),hashCode(),toString()和finalize()的行为�
 
 ###处理异常
 
+为了支持声明和抛出异常（通常是Throwable）,exceptLastCall()和except(T value)返回的对象提供了andThrow(Throwable throwable)方法。这个方法必须在录制阶段调用了模拟对象抛出异常方法的那个方法被调用之后执行。
+
+非受检异常（比如RuntimeException，Error以及他们的子类）不能在方法中被抛出。检查异常只能抛出在那些方法真的抛出异常的地方。
+
+###创建返回值和异常
+
 
 
 ----
