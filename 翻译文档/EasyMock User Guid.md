@@ -457,4 +457,53 @@ Object对象的四个方法equals(),hashCode(),toString()和finalize()的行为�
 
 ###指定返回值
 
+为了指定返回值，需要使用expect(T value)把预期的方法调用包装起来，然后这个方法的返回结果对象上用方法andReturn(Object reurnValue)声明返回值。
+
+举个例子，我们检查移除文档的流程。如果ClassUnderTest接收到一个移除文档的调用，它将会通过byte voteForRemoval(String title)去询问所有的协作方的投票。正数表示同意移除。如果所有值的和是正数，就会调用documentRemoved(String title)删除这个文档：
+
+>1. @Test 
+>1. public void testVoteForRemoval() {
+>1.   mock.documentAdded("Document");
+>1.   // expect document addition 
+>1.   // expect to be asked to vote for document removal, and vote for it 
+>1.   expect(mock.voteForRemoval("Document")).andReturn((byte) 42);
+>1.   mock.documentRemoved("Document");
+>1.   // expect document removal 
+>1.   replay(mock); 
+>1.   classUnderTest.addDocument("Document", new byte[0]); 
+>1.   assertTrue(classUnderTest.removeDocument("Document")); 
+>1.   verify(mock); 
+>1. }
+>1. 
+>1. @Test
+>1. public void testVoteAgainstRemoval() {
+>1.   mock.documentAdded("Document");
+>1.   // expect document addition 
+>1.   // expect to be asked to vote for document removal, and vote against it 
+>1.   expect(mock.voteForRemoval("Document")).andReturn((byte) -42);
+>1.   replay(mock);
+>1.   classUnderTest.addDocument("Document", new byte[0]);
+>1.   assertFalse(classUnderTest.removeDocument("Document"));
+>1.   verify(mock);
+>1. }
+
+返回值的类型在编译时候就会被检查。举例说，下面的代码不会被编译成功，因为提供的返回值的类型和方法返回值的类型不匹配：
+
+>1. expect(mock.voteForRemoval("Document")).andReturn("wrong type");
+
+除了使用expect(T value)返回对象来设置返回值外，还可以使用expectLastCall()方法的返回对象。替换下面的代码：
+
+>1. expect(mock.voteForRemoval("Document")).andReturn((byte) 42);
+
+可以使用:
+
+>1. mock.voteForRemoval("Document"); 
+>1. expectLastCall().andReturn((byte) 42);
+
+这种类型的语句建议在语句太长的情况下使用，因为它并不支持编译时候的类型检查。
+
+###处理异常
+
+
+
 ----
