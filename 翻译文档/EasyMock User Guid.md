@@ -641,6 +641,64 @@ anyTimes() - 无限制的任意调用次数
 
 ###定义自己的匹配器
 
-  
+有时候需要自己编写参数匹配器。让我们看下一个参数匹配器，它会去检查一个异常是否有相同的类型和同样的消息。匹配器会这样使用：
+
+>1. IllegalStateException e = new IllegalStateException("Operation not allowed.")
+>1. expect(mock.logThrowable(eqException(e))).andReturn(true);
+
+达到这个目的需要两步：定义新的参数匹配器，声明一个静态方法eqException()
+
+新的参数匹配器需要实现org.easymock.IArgumentMatcher接口。这个接口定义了两个方法，matches(Object actual)用于检查真实的参数是否和期望值匹配，appendTo(StringBuffer buffer)用于增加这个参数匹配器的字符串表示到指定的stringbuffer中。下面是具体的实现代码：
+
+>1. import org.easymock.IArgumentMatcher; 
+>1. 
+>1. public class ThrowableEquals implements IArgumentMatcher { 
+>1.   
+>1.   private Throwable expected; 
+>1.   
+>1.   public ThrowableEquals(Throwable expected) {
+>1.     this.expected = expected;
+>1.   }
+>1.   
+>1.   public boolean matches(Object actual) {
+>1.     if (!(actual instanceof Throwable)) {
+>1.       return false;
+>1.     }
+>1.     
+>1.     String actualMessage = ((Throwable) actual).getMessage();
+>1.     return expected.getClass().equals(actual.getClass()) &amp;&amp; expected.getMessage().equals(actualMessage);
+>1.   }
+>1.   
+>1.   public void appendTo(StringBuffer buffer) {
+>1.     buffer.append("eqException("); 
+>1.     buffer.append(expected.getClass().getName()); 
+>1.     buffer.append(" with message \""); 
+>1.     buffer.append(expected.getMessage()); 
+>1.     buffer.append("\"")"); 
+>1.   } 
+>1. }
+>1. 
+ 
+方法eqException用给定的Throwable创建参数匹配器，通过静态方法reportMatcher(IArgumentMatcher matcher)报告给EasyMock框架，并且返回一个有可能在这个方法中使用到的值（通常是0, null或者false ）。第一个尝试看起来是这样的：
+
+>1. public static Throwable eqException(Throwable in) {
+>1.   EasyMock.reportMatcher(new ThrowableEquals(in)); 
+>1.   return null;
+>1. } 
+
+然而，例子中的方法logThrowable接受Throwable的时候能够工作，但是并不能处理RuntimeException的时候无法得到具体的信息。在后面的例子中，我们的代码是无法编译通过的：
+
+>1. IllegalStateException e = new IllegalStateException("Operation not allowed.")
+>1. expect(mock.logThrowable(eqException(e))).andReturn(true);
+
+Java 5解决了这个问题，用Throwable为参数来定义一个eqException并返回值，替代的方法是使用泛型继承自Throwable：
+
+>1. public static&lt;T extends Throwable&gt;T eqException(T in) { 
+>1.   reportMatcher(new ThrowableEquals(in)); 
+>1.   return null; 
+>1. }
+
+##高级
+
 
 ----
