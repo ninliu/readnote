@@ -510,6 +510,31 @@ Object对象的四个方法equals(),hashCode(),toString()和finalize()的行为�
 
 ###创建返回值和异常
 
+有时候希望我们的模拟对象在真实的调用的时候返回值或者抛出异常。从EasyMock 2.2开始expectLastCall()和expect(T value)提供了方法andAnswer(IAnswer answer)方法，通过声明一个实现IAnswer接口的实现用来创建返回值和异常。
 
+在IAnswer的回调，通过EasyMock.getCurrentArguments()可以把参数传递给模拟对象。如果你这样使用，向参数重新排序的重构会打断你的测试，这是警告。
+
+一个替代IAnswer的方法是使用andDelegateTo()和andSubDelegateTo()方法。它们允许你把调用委派给一个模拟接口的具体实现，由它来提供响应。这样做的优点是，为IAnswer而在EasMock.getCurrentArguments()方法里面发现的参数现在都会被传递到具体实现中。这是重构安全的。缺点是必须必须手工提供一个模拟行为的实现，而这就是你想使用EasyMock来避免的。如果接口有很多方法，这将是痛苦的。最后，这个具体类的类型不能被静态得和模拟对象做检查。如果因为某些原因，这个特定类并没有实现被代理的方法，在回放阶段你会得到一个异常错误。但是这种情况是相当罕见的。
+
+为了正确理解这两个知识点，下面是个例子：
+
+>1. List&lt;String&gt; l = createMock(List.class); 
+>1. 
+>1. // andAnswer style 
+>1. expect(l.remove(10)).andAnswer(new IAnswer&lt;String&gt;() {
+>1.   public String answer() throws Throwable {
+>1.     return getCurrentArguments()[0].toString();
+>1.   } 
+>1. }); 
+>1. 
+>1. // andDelegateTo style 
+>1. expect(l.remove(10)).andDelegateTo(new ArrayList&lt;String&gt;() {
+>1.   @Override 
+>1.   public String remove(int index) {
+>1.     return Integer.toString(index); 
+>1.   } 
+>1. }); 
+
+###检查模拟对象间的方法执行顺序
 
 ----
