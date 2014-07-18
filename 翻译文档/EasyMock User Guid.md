@@ -590,4 +590,48 @@ anyTimes() - 无限制的任意调用次数
 1. 严格对象在创建之后就是打开顺序检查功能；
 1. 严格对象在重置之后也是打开顺序检查功能（查看模拟对象复用）
 
+###参数匹配和灵活的预期
+
+在一个模拟对象上预期一个确切的方法，对象参数默认是通过equals()方法来比较的。这会导致一个问题，举例说我们有下面预期：
+
+>1. String[] documents = new String[] { "Document 1", "Document 2" };
+>1. expect(mock.voteForRemovals(documents)).andReturn(42);
+
+如果这个方法使用了相同内容的另外一个数组为参数， 我们得到一个异常，因为数组也是使用equals()方法来对比参数的。
+
+>1. java.lang.AssertionError: 
+>1.   Unexpected method call voteForRemovals([Ljava.lang.String;@9a029e):
+>1.     voteForRemovals([Ljava.lang.String;@2db19d): expected: 1, actual: 0 
+>1.     documentRemoved("Document 1"): expected: 1, actual: 0 
+>1.     documentRemoved("Document 2"): expected: 1, actual: 0 
+>1.       at org.easymock.internal.MockInvocationHandler.invoke(MockInvocationHandler.java:29) 
+>1.       at org.easymock.internal.ObjectMethodsFilter.invoke(ObjectMethodsFilter.java:44) 
+>1.       at $Proxy0.voteForRemovals(Unknown Source) 
+>1.       at org.easymock.samples.ClassUnderTest.listenersAllowRemovals(ClassUnderTest.java:88) 
+>1.       at org.easymock.samples.ClassUnderTest.removeDocuments(ClassUnderTest.java:48) 
+>1.       at org.easymock.samples.ExampleTest.testVoteForRemovals(ExampleTest.java:83) 
+>1.       ...
+
+在这个例子中，为方法指定数组内容匹配，可以使用EasyMock静态方法aryEq()
+
+>1. String[] documents = new String[] { "Document 1", "Document 2" };
+>1. expect(mock.voteForRemovals(aryEq(documents))).andReturn(42);
+
+如果你在调用中要使用匹配器，必须为这个方法调用的参数指定匹配器
+
+下面是一些可用的预定义的参数匹配器：
+
+* eq(X value) 检查真实值和预期值是否相同， 支持原生类型和对象；
+* anyBoolean(), anyByte(),anyChar(),anyDouble(),anyFloat(),anyInt(),anyLong(),anyObject(),anyObject(Class clazz),anyShort(),anyString() 匹配任何值，对原生类型和对象
+* eq(X value, X delta) 检查真实值和预期值是否在一定的误差范围内相同，只针对float和double类型
+* aryEq(X value) 通过使用Arrays.equals()方法来检查真实值和预期值，适用原生类型和状态
+* isNull(),isNull(Class clazz) 检查真实值为空，适用所有对象
+* notNull(),notNull(Class clazz) 检查真实值不为空，适用对象
+* same(X value) 检查真实值是否和预期值相同，适用对象
+* isA(Class clazz) 检查真实值是指定类的实例，或者是指定类子类的实例。 Null永远返回false，适用对象
+* lt(X value), leq(X value),geq(X value),gt(X value) 真实值是否小于，小于等于，大于等于，大于给定预期值，适用所有的数字类型和能够比较的Comparable
+* startsWith(String prefix),contains(String substring),endsWith(String substring) 检查是否以预期值开始，包含预期值以及以预期值结尾的字符串，适用所有的String
+* matches(String regex),find(String regex) 检查真实值或者它的子字符串匹配给定的正则表达式，适用String
+* 
+
 ----
