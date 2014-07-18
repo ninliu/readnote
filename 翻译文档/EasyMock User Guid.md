@@ -629,9 +629,18 @@ anyTimes() - 无限制的任意调用次数
 * notNull(),notNull(Class clazz) 检查真实值不为空，适用对象
 * same(X value) 检查真实值是否和预期值相同，适用对象
 * isA(Class clazz) 检查真实值是指定类的实例，或者是指定类子类的实例。 Null永远返回false，适用对象
-* lt(X value), leq(X value),geq(X value),gt(X value) 真实值是否小于，小于等于，大于等于，大于给定预期值，适用所有的数字类型和能够比较的Comparable
+* lt(X value), leq(X value),geq(X value),gt(X value) 真实值是否小于，小于等于，大于等于，大于给定预期值，适用所有的数字类型和能够比较的Comparable对象
 * startsWith(String prefix),contains(String substring),endsWith(String substring) 检查是否以预期值开始，包含预期值以及以预期值结尾的字符串，适用所有的String
 * matches(String regex),find(String regex) 检查真实值或者它的子字符串匹配给定的正则表达式，适用String
-* 
+* and(X first, X second) 检查真实值和first和second都满足，适用原生类型和对象
+* or(X first, X second) 检查first或者second中有一个满足，适用原生类型和对象
+* not(X value) 检查适用的匹配检查器是否不匹配
+* cmpEq(X value) 通过使用Comparable.compareTo(X o)来检查真实值是否匹配，适用所有数值型和Comparable对象
+* cmp(X value, Comparator<X> comparator, LogicalOperator operator) 使用comparator(actual, value) operator 0来检查，operator是<,<=,>=,>或者=的一种。适用所有对象
+* capture(Capture<T> capture), captureXXX(Capture<T> capture) 匹配任何值，并放到capture中便于后面的获取。通过使用and(someMatcher(...), capture(c)) 在某些特殊的方法调用中获取方法参数。也可以通过CaptureType 来告诉给定的capture保留第一个，最后一个还是不用保留任何值。
+
+###定义自己的匹配器
+
+  
 
 ----
