@@ -537,4 +537,42 @@ Object对象的四个方法equals(),hashCode(),toString()和finalize()的行为�
 
 ###检查模拟对象间的方法执行顺序
 
+到目前为止，我们看到通过EasyMock类的静态方法来配置模拟对象都是单一的一个对象。但是大多数这样的静态方法只是标识出了模拟对象的隐藏控制方法并且委派它。模拟控制器是一个实现了IMockControl接口的对象。
+
+那么，替换下面的代码
+
+>1. IMyInterface mock = createStrictMock(IMyInterface.class);
+>1. replay(mock);
+>1. verify(mock);
+>1. reset(mock);
+
+我们可以使用等效的代码：
+
+>1. IMocksControl ctrl = createStrictControl();
+>1. IMyInterface mock = ctrl.createMock(IMyInterface.class);
+>1. ctrl.replay();
+>1. ctrl.verify();
+>1. ctrl.reset();
+
+IMockControl允许不止一个模拟对象，于是我们就能够检查多个模拟对象之间的方法调用顺序。比如，我们为IMyInterface实现了两个模拟对象，而且我们期望按顺序执行mock1.a()和mock2.a(),然后任意次数的执行mock1.c()和mock2.c()，最后再执行mock2.b()和mock1.b()
+
+>1. IMocksControl ctrl = createStrictControl();
+>1. IMyInterface mock1 = ctrl.createMock(IMyInterface.class);
+>1. IMyInterface mock2 = ctrl.createMock(IMyInterface.class);
+>1. mock1.a();
+>1. mock2.a();
+>1. ctrl.checkOrder(false);
+>1. mock1.c();
+>1. expectLastCall().anyTimes();
+>1. mock2.c();
+>1. expectLastCall().anyTimes();
+>1. ctrl.checkOrder(true);
+>1. mock2.b();
+>1. mock1.b();
+>1. ctrl.replay();
+
+###灵活的调用次数
+
+
+
 ----
