@@ -700,5 +700,29 @@ Java 5解决了这个问题，用Throwable为参数来定义一个eqException并
 
 ##高级
 
+###序列化模拟
+
+模拟对象可以在他们生命周期中任何时候被序列化，然而也有一些明显的制约：
+
+1. 所有被用到的匹配器需要被序列化（所有真实的EasyMock都这样）
+2. 录制的参数也应该被序列化
+
+###多线程
+
+在录制阶段，一个mock不是线程安全的。所以给定的一个mock（或者多个mock关联到同一个IMockControl）只能在一个线程中录制。然而不同的模拟可以在不同的线程中同时录制。
+
+在回放阶段，模拟默认是线程安全的。但是在录制阶段可以通过方法makeThreadSafe(mock, false)来修改给定的mock对象。这可以防止在某些罕见的情况下发生死锁。
+
+最后在一个模拟对象上调用checkIsUsedInOneThread(mock, true)方法来确保一个mock在一个线程上使用，否则会抛出一个异常。这会确保线程不安全的模拟对象被正确得使用。
+
+###OSGI
+
+EasyMock的jar包可以用作OSGI绑定。它导出了org.easymock, org.easymock.internal和org.easymock.internal.matchers包。但是为了后面导入两个，你需要设置poweruser的值为true(poweruser=true)。这些包是为了扩展EasyMock，所以他们不需要被import。
+
+###向后兼容性
+
+EasyMock 3依然有一个类扩展项目（虽然被遗弃）用来支持迁移早期的EasyMock2到EasyMock3。它是代码而不是二进制兼容的。所以这个代码需要被重新编译。
+
+EasyMock2.1有一个回调特性但是在EasyMock2.2版本中移除了，因为实在太复杂。从EasyMock2.2开始，接口IAnswer提供了会掉的功能。
 
 ----
