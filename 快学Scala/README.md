@@ -7,5 +7,5 @@
 
 ## 目录 ##
 
-1. 第一章 基础
-1. 第二章 控制结构和函数
+1. 第一章 [基础](https://github.com/ninliu/readnote/blob/master/%E5%BF%AB%E5%AD%A6Scala/ch01.md)
+1. 第二章 [控制结构和函数](https://github.com/ninliu/readnote/blob/master/%E5%BF%AB%E5%AD%A6Scala/ch02.md)
